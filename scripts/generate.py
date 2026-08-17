@@ -203,12 +203,21 @@ def main():
     cargo_content = render_template(env, "Cargo.toml.j2", context)
     (SRC_TAURI_DIR / "Cargo.toml").write_text(cargo_content, encoding="utf-8")
 
+    # Compute lib name from identifier (dots→underscores, dashes→underscores)
+    lib_name = app_config["identifier"].replace(".", "_").replace("-", "_") + "_lib"
+
     # Render and write lib.rs
     print("Generating src/lib.rs...")
     src_dir = SRC_TAURI_DIR / "src"
     src_dir.mkdir(parents=True, exist_ok=True)
     lib_content = render_template(env, "lib.rs.j2", context)
     (src_dir / "lib.rs").write_text(lib_content, encoding="utf-8")
+
+    # Render and write main.rs
+    print("Generating src/main.rs...")
+    main_context = {"lib_name": lib_name}
+    main_content = render_template(env, "main.rs.j2", main_context)
+    (src_dir / "main.rs").write_text(main_content, encoding="utf-8")
 
     # Render and write tauri.conf.json
     print("Generating tauri.conf.json...")

@@ -19,5 +19,5 @@ setup:
 # Clean generated files (restore to template state)
 clean:
 	@echo "Restoring src-tauri to default state..."
-	@git checkout -- src-tauri/Cargo.toml src-tauri/src/lib.rs src-tauri/tauri.conf.json src-tauri/capabilities/default.json 2>/dev/null || true
+	@git checkout -- src-tauri/Cargo.toml src-tauri/src/lib.rs src-tauri/src/main.rs src-tauri/tauri.conf.json src-tauri/capabilities/default.json 2>/dev/null || true
 	@rm -f src-tauri/Info.ios.plist
