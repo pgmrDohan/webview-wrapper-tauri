@@ -5,6 +5,6 @@
   "windows": ["main"],
   "platforms": ["iOS", "android"],
   "permissions": [
-    "core:default"
+  "core:default"
 ]
 }
