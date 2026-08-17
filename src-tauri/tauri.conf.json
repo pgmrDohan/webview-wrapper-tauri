@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "webview-wrapper-tauri",
+  "version": "0.1.0",
+  "identifier": "com.example",
+  "build": {
+    "devUrl": "https://example.com",
+    "frontendDist": "https://example.com"
+  },
+  "plugins": {},
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "allowLinkPreview": false,
+        "backgroundColor": "",
+        "backgroundThrottling": "suspend",
+        "center": true,
+        "devtools": false,
+        "disableInputAccessoryView": false,
+        "fullscreen": true,
+        "limitsNavigationsToAppBoundDomains": true,
+        "resizable": false,
+        "title": "",
+        "url": "https://example.com",
+        "useHttpsScheme": true,
+        "userAgent": ""
+      }
+    ],
+    "security": {
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$APPDATA/**", "$DOCUMENT/**", "$CACHE/**", "$TEMP/**"]
+      },
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: https:; connect-src 'self' https://api.example.com;",
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "android": {
+      "autoIncrementVersionCode": false,
+      "debugApplicationIdSuffix": ".debug"
+    },
+    "category": "DeveloperTool",
+    "copyright": "@Copyright 2026. Dohan Kwon All rights reserved.",
+    "createUpdaterArtifacts": true,
+    "fileAssociations": [{}],
+    "targets": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "iOS": {},
+    "license": "",
+    "licenseFile": "../LICENSE",
+    "longDescription": "",
+    "publisher": "",
+    "resources": [],
+    "shortDescription": ""
+  }
+}

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">"webview-wrapper-tauri"</string>
+    <string name="main_activity_title">"webview-wrapper-tauri"</string>
+</resources>
