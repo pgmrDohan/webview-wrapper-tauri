@@ -42,6 +42,34 @@ If your app handles custom file types, run **"Setup: File Association"** workflo
 
 For each plugin you enabled, add the corresponding JavaScript code to your web app. See the [plugin documentation](plugins/) for examples.
 
+### Safe Area (필수)
+
+앱이 전체 화면을 사용하려면 HTML의 `<meta viewport>` 태그에 `viewport-fit=cover`를 추가하세요:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+```
+
+이렇게 하면:
+- 웹 콘텐츠가 노치/Dynamic Island/홈 인디케이터 영역까지 전체 화면을 채움
+- CSS 환경 변수로 safe area 크기를 알 수 있음:
+
+```css
+body {
+  /* 상단 (노치/Dynamic Island 영역) */
+  padding-top: env(safe-area-inset-top);
+  /* 하단 (홈 인디케이터 영역) */
+  padding-bottom: env(safe-area-inset-bottom);
+  /* 좌우 (가로 모드에서 노치) */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+```
+
+`viewport-fit=cover`가 없으면 시스템이 자동으로 safe area 내부에만 콘텐츠를 배치하며, `env()` 값은 모두 `0`이 됩니다.
+
+### Native Plugin 호출
+
 Key pattern for most plugins:
 ```javascript
 // 1. Check permission
