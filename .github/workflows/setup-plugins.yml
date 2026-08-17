@@ -1,0 +1,158 @@
+name: "Setup: Official Plugins"
+on:
+  workflow_dispatch:
+    inputs:
+      barcode_scanner:
+        description: "Barcode Scanner (camera QR/barcode scanning)"
+        type: boolean
+        default: false
+      clipboard:
+        description: "Clipboard (read/write system clipboard)"
+        type: boolean
+        default: false
+      biometric:
+        description: "Biometric (fingerprint/face authentication)"
+        type: boolean
+        default: false
+      dialog:
+        description: "Dialog (native file/message dialogs)"
+        type: boolean
+        default: false
+      deep_linking:
+        description: "Deep Linking (URL scheme / universal links)"
+        type: boolean
+        default: false
+      store:
+        description: "Store (persistent key-value storage)"
+        type: boolean
+        default: false
+      persisted_scope:
+        description: "Persisted Scope (remember file access permissions)"
+        type: boolean
+        default: false
+      os_info:
+        description: "OS Info (device/OS information)"
+        type: boolean
+        default: false
+      opener:
+        description: "Opener (open URLs/files with default app)"
+        type: boolean
+        default: false
+      notification:
+        description: "Notification (native push notifications)"
+        type: boolean
+        default: false
+      nfc:
+        description: "NFC (read/write NFC tags)"
+        type: boolean
+        default: false
+      logging:
+        description: "Logging (structured logging)"
+        type: boolean
+        default: false
+      http_client:
+        description: "HTTP Client (native HTTP requests)"
+        type: boolean
+        default: false
+      haptics:
+        description: "Haptics (vibration/haptic feedback)"
+        type: boolean
+        default: false
+      geolocation:
+        description: "Geolocation (GPS/location services)"
+        type: boolean
+        default: false
+      file_system:
+        description: "File System (read/write local files)"
+        type: boolean
+        default: false
+      stronghold:
+        description: "Stronghold (encrypted secret storage)"
+        type: boolean
+        default: false
+      websocket:
+        description: "WebSocket (native WebSocket connections)"
+        type: boolean
+        default: false
+      upload:
+        description: "Upload (file upload with progress)"
+        type: boolean
+        default: false
+
+jobs:
+  update-plugins:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update config/plugins.json (official section)
+        run: |
+          python3 -c "
+          import json
+
+          with open('config/plugins.json', 'r') as f:
+              config = json.load(f)
+
+          # Map workflow inputs to plugin IDs
+          plugin_map = {
+              'barcode_scanner': 'barcode-scanner',
+              'clipboard': 'clipboard',
+              'biometric': 'biometric',
+              'dialog': 'dialog',
+              'deep_linking': 'deep-linking',
+              'store': 'store',
+              'persisted_scope': 'persisted-scope',
+              'os_info': 'os-info',
+              'opener': 'opener',
+              'notification': 'notification',
+              'nfc': 'nfc',
+              'logging': 'logging',
+              'http_client': 'http-client',
+              'haptics': 'haptics',
+              'geolocation': 'geolocation',
+              'file_system': 'file-system',
+              'stronghold': 'stronghold',
+              'websocket': 'websocket',
+              'upload': 'upload',
+          }
+
+          # Input values from workflow_dispatch
+          inputs = {
+              'barcode_scanner': '${{ inputs.barcode_scanner }}' == 'true',
+              'clipboard': '${{ inputs.clipboard }}' == 'true',
+              'biometric': '${{ inputs.biometric }}' == 'true',
+              'dialog': '${{ inputs.dialog }}' == 'true',
+              'deep_linking': '${{ inputs.deep_linking }}' == 'true',
+              'store': '${{ inputs.store }}' == 'true',
+              'persisted_scope': '${{ inputs.persisted_scope }}' == 'true',
+              'os_info': '${{ inputs.os_info }}' == 'true',
+              'opener': '${{ inputs.opener }}' == 'true',
+              'notification': '${{ inputs.notification }}' == 'true',
+              'nfc': '${{ inputs.nfc }}' == 'true',
+              'logging': '${{ inputs.logging }}' == 'true',
+              'http_client': '${{ inputs.http_client }}' == 'true',
+              'haptics': '${{ inputs.haptics }}' == 'true',
+              'geolocation': '${{ inputs.geolocation }}' == 'true',
+              'file_system': '${{ inputs.file_system }}' == 'true',
+              'stronghold': '${{ inputs.stronghold }}' == 'true',
+              'websocket': '${{ inputs.websocket }}' == 'true',
+              'upload': '${{ inputs.upload }}' == 'true',
+          }
+
+          for input_key, plugin_id in plugin_map.items():
+              if plugin_id in config['official']:
+                  config['official'][plugin_id]['enabled'] = inputs[input_key]
+
+          with open('config/plugins.json', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/plugins.json
+          git diff --cached --quiet || git commit -m "config: update official plugin selections"
+          git push

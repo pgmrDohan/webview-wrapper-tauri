@@ -1,0 +1,102 @@
+name: "Setup: App Configuration"
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: "App display name"
+        required: true
+        type: string
+        default: "My App"
+      identifier:
+        description: "App identifier (e.g., com.company.appname)"
+        required: true
+        type: string
+        default: "com.example.myapp"
+      version:
+        description: "App version (semver, e.g., 1.0.0)"
+        required: true
+        type: string
+        default: "1.0.0"
+      website_url:
+        description: "Your website URL (the WebView will load this)"
+        required: true
+        type: string
+        default: "https://example.com"
+      api_url:
+        description: "Your API URL (for CSP whitelist)"
+        required: false
+        type: string
+        default: ""
+      user_agent:
+        description: "Custom User-Agent string (leave empty for default)"
+        required: false
+        type: string
+        default: ""
+      background_color:
+        description: "Background color (hex, e.g., #ffffff)"
+        required: false
+        type: string
+        default: "#ffffff"
+
+jobs:
+  update-config:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate inputs
+        run: |
+          # Validate identifier format (reverse domain)
+          if ! echo "${{ inputs.identifier }}" | grep -qP '^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$'; then
+            echo "Error: identifier must be in reverse domain format (e.g., com.company.app)"
+            exit 1
+          fi
+          # Validate version format (semver)
+          if ! echo "${{ inputs.version }}" | grep -qP '^\d+\.\d+\.\d+'; then
+            echo "Error: version must be in semver format (e.g., 1.0.0)"
+            exit 1
+          fi
+          # Validate URL format
+          if ! echo "${{ inputs.website_url }}" | grep -qP '^https?://'; then
+            echo "Error: website_url must start with http:// or https://"
+            exit 1
+          fi
+
+      - name: Update config/app.json
+        run: |
+          cat > config/app.json << 'EOF'
+          {
+            "productName": "${{ inputs.app_name }}",
+            "identifier": "${{ inputs.identifier }}",
+            "version": "${{ inputs.version }}",
+            "websiteUrl": "${{ inputs.website_url }}",
+            "apiUrl": "${{ inputs.api_url }}",
+            "userAgent": "${{ inputs.user_agent }}",
+            "backgroundColor": "${{ inputs.background_color }}"
+          }
+          EOF
+          # Use python to properly format the JSON (handles special chars)
+          python3 -c "
+          import json
+          config = {
+              'productName': '''${{ inputs.app_name }}''',
+              'identifier': '''${{ inputs.identifier }}''',
+              'version': '''${{ inputs.version }}''',
+              'websiteUrl': '''${{ inputs.website_url }}''',
+              'apiUrl': '''${{ inputs.api_url }}''',
+              'userAgent': '''${{ inputs.user_agent }}''',
+              'backgroundColor': '''${{ inputs.background_color }}'''
+          }
+          with open('config/app.json', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/app.json
+          git diff --cached --quiet || git commit -m "config: update app configuration"
+          git push

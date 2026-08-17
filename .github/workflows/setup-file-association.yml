@@ -1,0 +1,104 @@
+name: "Setup: File Association"
+on:
+  workflow_dispatch:
+    inputs:
+      extensions:
+        description: "File extensions (comma-separated, e.g., myfile,mydata)"
+        required: true
+        type: string
+      mime_type:
+        description: "MIME type (e.g., application/x-myfile)"
+        required: false
+        type: string
+        default: ""
+      name:
+        description: "Association name"
+        required: false
+        type: string
+        default: ""
+      description:
+        description: "Description (Windows Explorer type column)"
+        required: false
+        type: string
+        default: ""
+      role:
+        description: "App role for this file type"
+        type: choice
+        options:
+          - Editor
+          - Viewer
+          - None
+        default: "Editor"
+      rank:
+        description: "Handler rank"
+        type: choice
+        options:
+          - Default
+          - Owner
+          - Alternate
+        default: "Default"
+      android_intent_actions:
+        description: "Android intent actions (comma-separated: view,send,sendMultiple)"
+        required: false
+        type: string
+        default: "view"
+      clear_existing:
+        description: "Clear existing associations before adding"
+        type: boolean
+        default: false
+
+jobs:
+  update-file-association:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update config/file-association.json
+        run: |
+          python3 -c "
+          import json
+
+          with open('config/file-association.json', 'r') as f:
+              config = json.load(f)
+
+          clear_existing = '${{ inputs.clear_existing }}' == 'true'
+          if clear_existing:
+              config['associations'] = []
+
+          extensions = [e.strip() for e in '''${{ inputs.extensions }}'''.split(',') if e.strip()]
+          mime_type = '''${{ inputs.mime_type }}'''
+          name = '''${{ inputs.name }}'''
+          description = '''${{ inputs.description }}'''
+          role = '''${{ inputs.role }}'''
+          rank = '''${{ inputs.rank }}'''
+          android_actions = [a.strip() for a in '''${{ inputs.android_intent_actions }}'''.split(',') if a.strip()]
+
+          association = {'ext': extensions}
+          if mime_type:
+              association['mimeType'] = mime_type
+          if name:
+              association['name'] = name
+          if description:
+              association['description'] = description
+          if role and role != 'None':
+              association['role'] = role
+          if rank:
+              association['rank'] = rank
+          if android_actions:
+              association['androidIntentActionFilters'] = android_actions
+
+          config['associations'].append(association)
+
+          with open('config/file-association.json', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/file-association.json
+          git diff --cached --quiet || git commit -m "config: update file associations"
+          git push

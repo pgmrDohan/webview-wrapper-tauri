@@ -1,0 +1,102 @@
+name: "Setup: Community Plugins"
+on:
+  workflow_dispatch:
+    inputs:
+      fcm:
+        description: "FCM (Firebase Cloud Messaging push notifications)"
+        type: boolean
+        default: false
+      blec:
+        description: "BLE (Bluetooth Low Energy communication)"
+        type: boolean
+        default: false
+      drpc:
+        description: "DRPC (Discord Rich Presence)"
+        type: boolean
+        default: false
+      prevent_default:
+        description: "Prevent Default (disable default browser behaviors)"
+        type: boolean
+        default: false
+      ios_photos:
+        description: "iOS Photos (access photo library)"
+        type: boolean
+        default: false
+      keep_screen_on:
+        description: "Keep Screen On (prevent screen timeout)"
+        type: boolean
+        default: false
+      iap:
+        description: "IAP (In-App Purchases)"
+        type: boolean
+        default: false
+      sharesheet:
+        description: "Sharesheet (native share dialog)"
+        type: boolean
+        default: false
+      udp:
+        description: "UDP (UDP socket communication)"
+        type: boolean
+        default: false
+      android_battery_optimization:
+        description: "Battery Optimization (request disable battery optimization)"
+        type: boolean
+        default: false
+
+jobs:
+  update-plugins:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update config/plugins.json (community section)
+        run: |
+          python3 -c "
+          import json
+
+          with open('config/plugins.json', 'r') as f:
+              config = json.load(f)
+
+          plugin_map = {
+              'fcm': 'fcm',
+              'blec': 'blec',
+              'drpc': 'drpc',
+              'prevent_default': 'prevent-default',
+              'ios_photos': 'ios-photos',
+              'keep_screen_on': 'keep-screen-on',
+              'iap': 'iap',
+              'sharesheet': 'sharesheet',
+              'udp': 'udp',
+              'android_battery_optimization': 'android-battery-optimization',
+          }
+
+          inputs = {
+              'fcm': '${{ inputs.fcm }}' == 'true',
+              'blec': '${{ inputs.blec }}' == 'true',
+              'drpc': '${{ inputs.drpc }}' == 'true',
+              'prevent_default': '${{ inputs.prevent_default }}' == 'true',
+              'ios_photos': '${{ inputs.ios_photos }}' == 'true',
+              'keep_screen_on': '${{ inputs.keep_screen_on }}' == 'true',
+              'iap': '${{ inputs.iap }}' == 'true',
+              'sharesheet': '${{ inputs.sharesheet }}' == 'true',
+              'udp': '${{ inputs.udp }}' == 'true',
+              'android_battery_optimization': '${{ inputs.android_battery_optimization }}' == 'true',
+          }
+
+          for input_key, plugin_id in plugin_map.items():
+              if plugin_id in config['community']:
+                  config['community'][plugin_id]['enabled'] = inputs[input_key]
+
+          with open('config/plugins.json', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/plugins.json
+          git diff --cached --quiet || git commit -m "config: update community plugin selections"
+          git push

@@ -1,0 +1,129 @@
+name: "Setup: Plugin Options"
+on:
+  workflow_dispatch:
+    inputs:
+      deep_link_scheme:
+        description: "Deep Link: Custom URL scheme (e.g., myapp)"
+        type: string
+        default: ""
+      deep_link_host:
+        description: "Deep Link: Host for universal/app links (e.g., example.com)"
+        type: string
+        default: ""
+      deep_link_path_prefix:
+        description: "Deep Link: Path prefix (e.g., /open)"
+        type: string
+        default: ""
+      deep_link_app_link:
+        description: "Deep Link: Use verified app links (requires server config)"
+        type: boolean
+        default: true
+      http_allowed_urls:
+        description: "HTTP Client: Allowed URLs (comma-separated, e.g., https://api.example.com,https://cdn.example.com)"
+        type: string
+        default: ""
+      drpc_application_id:
+        description: "Discord RPC: Application ID"
+        type: string
+        default: ""
+      fcm_project_id:
+        description: "FCM: Firebase project ID"
+        type: string
+        default: ""
+      geolocation_description:
+        description: "Geolocation: iOS usage description"
+        type: string
+        default: "Access your location"
+      biometric_description:
+        description: "Biometric: iOS usage description"
+        type: string
+        default: "Authenticate with biometric"
+      camera_description:
+        description: "Barcode Scanner: iOS camera usage description"
+        type: string
+        default: "Scan QR codes and barcodes"
+      nfc_description:
+        description: "NFC: iOS usage description"
+        type: string
+        default: "Read and write NFC tags"
+      blec_description:
+        description: "BLE: iOS Bluetooth usage description"
+        type: string
+        default: "Connect to Bluetooth devices"
+      photo_description:
+        description: "iOS Photos: Photo library usage description"
+        type: string
+        default: "Access your photos"
+      iap_product_ids:
+        description: "IAP: Product IDs (comma-separated)"
+        type: string
+        default: ""
+
+jobs:
+  update-options:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update plugin options in config/plugins.json
+        run: |
+          python3 -c "
+          import json
+
+          with open('config/plugins.json', 'r') as f:
+              config = json.load(f)
+
+          # Deep-linking options
+          deep_link_scheme = '''${{ inputs.deep_link_scheme }}'''
+          deep_link_host = '''${{ inputs.deep_link_host }}'''
+          deep_link_path_prefix = '''${{ inputs.deep_link_path_prefix }}'''
+          deep_link_app_link = '${{ inputs.deep_link_app_link }}' == 'true'
+          if deep_link_scheme or deep_link_host:
+              config['official']['deep-linking']['options'] = {
+                  'scheme': deep_link_scheme,
+                  'host': deep_link_host,
+                  'pathPrefix': deep_link_path_prefix,
+                  'appLink': deep_link_app_link,
+              }
+
+          # HTTP client allowed URLs
+          http_urls = '''${{ inputs.http_allowed_urls }}'''
+          if http_urls:
+              config['official']['http-client']['options']['allowed_urls'] = [u.strip() for u in http_urls.split(',') if u.strip()]
+
+          # DRPC application ID
+          drpc_id = '''${{ inputs.drpc_application_id }}'''
+          if drpc_id:
+              config['community']['drpc']['options']['application_id'] = drpc_id
+
+          # FCM project ID
+          fcm_id = '''${{ inputs.fcm_project_id }}'''
+          if fcm_id:
+              config['community']['fcm']['options']['project_id'] = fcm_id
+
+          # Usage descriptions
+          config['official']['geolocation']['options']['usage_description'] = '''${{ inputs.geolocation_description }}''' or 'Access your location'
+          config['official']['biometric']['options']['usage_description'] = '''${{ inputs.biometric_description }}''' or 'Authenticate with biometric'
+          config['official']['barcode-scanner']['options']['usage_description'] = '''${{ inputs.camera_description }}''' or 'Scan QR codes and barcodes'
+          config['official']['nfc']['options']['usage_description'] = '''${{ inputs.nfc_description }}''' or 'Read and write NFC tags'
+          config['community']['blec']['options']['usage_description'] = '''${{ inputs.blec_description }}''' or 'Connect to Bluetooth devices'
+          config['community']['ios-photos']['options']['usage_description'] = '''${{ inputs.photo_description }}''' or 'Access your photos'
+
+          # IAP product IDs
+          iap_ids = '''${{ inputs.iap_product_ids }}'''
+          if iap_ids:
+              config['community']['iap']['options']['product_ids'] = [p.strip() for p in iap_ids.split(',') if p.strip()]
+
+          with open('config/plugins.json', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/plugins.json
+          git diff --cached --quiet || git commit -m "config: update plugin options"
+          git push

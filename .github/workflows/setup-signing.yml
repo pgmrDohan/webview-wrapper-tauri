@@ -1,0 +1,111 @@
+name: "Setup: Signing Configuration"
+on:
+  workflow_dispatch:
+    inputs:
+      android_key_alias:
+        description: "Android: Key alias in the keystore"
+        required: false
+        type: string
+        default: "release"
+      ios_team_id:
+        description: "iOS: Apple Developer Team ID"
+        required: false
+        type: string
+        default: ""
+      validate_secrets:
+        description: "Validate that signing secrets are configured"
+        type: boolean
+        default: true
+
+jobs:
+  update-signing:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update config/signing.json
+        run: |
+          python3 -c "
+          import json
+
+          with open('config/signing.json', 'r') as f:
+              config = json.load(f)
+
+          android_key_alias = '''${{ inputs.android_key_alias }}''' or 'release'
+          ios_team_id = '''${{ inputs.ios_team_id }}'''
+
+          config['android']['keyAlias'] = android_key_alias
+          config['ios']['teamId'] = ios_team_id
+
+          with open('config/signing.json', 'w') as f:
+              json.dump(config, f, indent=2)
+          "
+
+      - name: Validate Android signing secrets
+        if: inputs.validate_secrets
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          MISSING=""
+          if [ -z "$KEYSTORE" ]; then
+            MISSING="$MISSING\n  - ANDROID_KEYSTORE_BASE64 (base64-encoded .jks or .keystore file)"
+          fi
+          if [ -z "$KEYSTORE_PASS" ]; then
+            MISSING="$MISSING\n  - ANDROID_KEYSTORE_PASSWORD"
+          fi
+          if [ -z "$KEY_PASS" ]; then
+            MISSING="$MISSING\n  - ANDROID_KEY_PASSWORD"
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "⚠️  Missing Android signing secrets:"
+            echo -e "$MISSING"
+            echo ""
+            echo "To configure Android signing:"
+            echo "1. Generate a keystore: keytool -genkey -v -keystore release.keystore -alias ${{ inputs.android_key_alias }} -keyalg RSA -keysize 2048 -validity 10000"
+            echo "2. Base64 encode it: base64 -i release.keystore"
+            echo "3. Add the above secrets in Settings > Secrets and variables > Actions"
+          else
+            echo "✅ All Android signing secrets are configured"
+          fi
+
+      - name: Validate iOS signing secrets
+        if: inputs.validate_secrets
+        env:
+          CERTIFICATE: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          CERT_PASS: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          MISSING=""
+          if [ -z "$CERTIFICATE" ]; then
+            MISSING="$MISSING\n  - IOS_CERTIFICATE_BASE64 (base64-encoded .p12 certificate)"
+          fi
+          if [ -z "$CERT_PASS" ]; then
+            MISSING="$MISSING\n  - IOS_CERTIFICATE_PASSWORD"
+          fi
+          if [ -z "$PROFILE" ]; then
+            MISSING="$MISSING\n  - IOS_PROVISIONING_PROFILE_BASE64 (base64-encoded .mobileprovision)"
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "⚠️  Missing iOS signing secrets:"
+            echo -e "$MISSING"
+            echo ""
+            echo "To configure iOS signing:"
+            echo "1. Export your certificate from Keychain Access as .p12"
+            echo "2. Download provisioning profile from Apple Developer Portal"
+            echo "3. Base64 encode both files"
+            echo "4. Add the above secrets in Settings > Secrets and variables > Actions"
+          else
+            echo "✅ All iOS signing secrets are configured"
+          fi
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/signing.json
+          git diff --cached --quiet || git commit -m "config: update signing configuration"
+          git push
