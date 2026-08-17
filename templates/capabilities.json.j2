@@ -4,7 +4,5 @@
   "description": "Capability for the main window with selected plugins",
   "windows": ["main"],
   "platforms": ["iOS", "android"],
-  "permissions": [
-    "core:default"
-]
+  "permissions": {{ capabilities | tojson(indent=2) }}
 }

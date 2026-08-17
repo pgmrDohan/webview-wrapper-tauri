@@ -1,13 +1,13 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "My App",
-  "version": "1.0.0",
-  "identifier": "com.example.myapp",
+  "productName": "{{ app.productName }}",
+  "version": "{{ app.version }}",
+  "identifier": "{{ app.identifier }}",
   "build": {
-    "devUrl": "https://example.com",
-    "frontendDist": "https://example.com"
+    "devUrl": "{{ app.websiteUrl }}",
+    "frontendDist": "{{ app.websiteUrl }}"
   },
-  "plugins": {},
+  "plugins": {{ plugins_config | tojson(indent=2) }},
   "app": {
     "withGlobalTauri": true,
     "windows": [
@@ -15,10 +15,10 @@
         "center": true,
         "fullscreen": true,
         "resizable": false,
-        "url": "https://example.com",
+        "url": "{{ app.websiteUrl }}",
         "useHttpsScheme": true,
-        "userAgent": "",
-        "backgroundColor": "#ffffff"
+        "userAgent": "{{ app.userAgent }}",
+        "backgroundColor": "{{ app.backgroundColor }}"
       }
     ],
     "security": {
@@ -26,7 +26,7 @@
         "enable": true,
         "scope": ["$APPDATA/**", "$DOCUMENT/**", "$CACHE/**", "$TEMP/**"]
       },
-      "csp": "default-src 'self' https://example.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://example.com; style-src 'self' 'unsafe-inline' https://example.com; img-src 'self' asset: https: data: blob:; connect-src 'self' https://example.com https://api.example.com https: wss:; font-src 'self' https://example.com https: data:; media-src 'self' https://example.com https: blob:",
+      "csp": "{{ csp }}",
       "freezePrototype": true
     }
   },
@@ -44,6 +44,6 @@
       "icons/icon.ico"
     ],
     "iOS": {},
-    "fileAssociations": []
+    "fileAssociations": {{ file_associations | tojson(indent=2) }}
   }
 }

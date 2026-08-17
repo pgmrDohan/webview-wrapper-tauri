@@ -1,0 +1,35 @@
+{% set has_stronghold = plugins | selectattr("id", "equalto", "stronghold") | list | length > 0 %}
+{% if has_stronghold %}
+use tauri::Manager;
+
+{% endif %}
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    let mut builder = tauri::Builder::default();
+
+{% for plugin in plugins %}
+{% if plugin.id == "stronghold" %}
+    builder = builder.setup(|app| {
+        let salt_path = app
+            .path()
+            .app_local_data_dir()
+            .expect("could not resolve app local data path")
+            .join("salt.txt");
+        app.handle().plugin(
+            tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build(),
+        )?;
+        Ok(())
+    });
+{% elif plugin.id == "logging" %}
+    builder = builder.plugin(tauri_plugin_log::Builder::new().build());
+{% elif plugin.id == "store" %}
+    builder = builder.plugin(tauri_plugin_store::Builder::default().build());
+{% else %}
+    builder = builder.plugin({{ plugin.plugin_init }});
+{% endif %}
+{% endfor %}
+
+    builder
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}

@@ -1,0 +1,32 @@
+[package]
+name = "{{ app.identifier | replace('.', '-') }}"
+version = "{{ app.version }}"
+description = "{{ app.productName }}"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "{{ app.identifier | replace('.', '_') | replace('-', '_') }}_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+{% for plugin in plugins %}
+{% if plugin.crate_source == "crates_io" %}
+{{ plugin.crate_name }} = "{{ plugin.crate_version }}"
+{% else %}
+{{ plugin.crate_name }} = { git = "{{ plugin.git_url }}"{% if plugin.git_branch %}, branch = "{{ plugin.git_branch }}"{% endif %} }
+{% endif %}
+{% endfor %}
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
