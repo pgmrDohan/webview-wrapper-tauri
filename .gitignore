@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build artifacts
+src-tauri/target/
+*.apk
+*.ipa
+*.aab
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated files marker
+.generated

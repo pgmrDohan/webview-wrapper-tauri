@@ -1,0 +1,35 @@
+{
+  "official": {
+    "barcode-scanner": { "enabled": false, "options": { "usage_description": "Scan QR codes and barcodes" } },
+    "clipboard": { "enabled": false, "options": {} },
+    "biometric": { "enabled": false, "options": { "usage_description": "Authenticate with biometric" } },
+    "dialog": { "enabled": false, "options": {} },
+    "deep-linking": { "enabled": false, "options": { "scheme": "", "host": "", "pathPrefix": "", "appLink": true } },
+    "store": { "enabled": false, "options": {} },
+    "persisted-scope": { "enabled": false, "options": {} },
+    "os-info": { "enabled": false, "options": {} },
+    "opener": { "enabled": false, "options": {} },
+    "notification": { "enabled": false, "options": {} },
+    "nfc": { "enabled": false, "options": { "usage_description": "Read and write NFC tags" } },
+    "logging": { "enabled": false, "options": {} },
+    "http-client": { "enabled": false, "options": { "allowed_urls": [] } },
+    "haptics": { "enabled": false, "options": {} },
+    "geolocation": { "enabled": false, "options": { "usage_description": "Access your location" } },
+    "file-system": { "enabled": false, "options": {} },
+    "stronghold": { "enabled": false, "options": {} },
+    "websocket": { "enabled": false, "options": {} },
+    "upload": { "enabled": false, "options": {} }
+  },
+  "community": {
+    "fcm": { "enabled": false, "options": { "project_id": "" } },
+    "blec": { "enabled": false, "options": { "usage_description": "Connect to Bluetooth devices" } },
+    "drpc": { "enabled": false, "options": { "application_id": "" } },
+    "prevent-default": { "enabled": false, "options": {} },
+    "ios-photos": { "enabled": false, "options": { "usage_description": "Access your photos" } },
+    "keep-screen-on": { "enabled": false, "options": {} },
+    "iap": { "enabled": false, "options": { "product_ids": [] } },
+    "sharesheet": { "enabled": false, "options": {} },
+    "udp": { "enabled": false, "options": {} },
+    "android-battery-optimization": { "enabled": false, "options": {} }
+  }
+}

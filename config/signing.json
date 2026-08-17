@@ -1,0 +1,14 @@
+{
+  "android": {
+    "keystoreSecretName": "ANDROID_KEYSTORE_BASE64",
+    "keystorePasswordSecretName": "ANDROID_KEYSTORE_PASSWORD",
+    "keyAlias": "release",
+    "keyPasswordSecretName": "ANDROID_KEY_PASSWORD"
+  },
+  "ios": {
+    "teamId": "",
+    "certificateSecretName": "IOS_CERTIFICATE_BASE64",
+    "certificatePasswordSecretName": "IOS_CERTIFICATE_PASSWORD",
+    "provisioningProfileSecretName": "IOS_PROVISIONING_PROFILE_BASE64"
+  }
+}

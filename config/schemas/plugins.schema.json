@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Plugins Configuration",
+  "description": "Plugin selections and per-plugin options",
+  "type": "object",
+  "required": ["official", "community"],
+  "properties": {
+    "official": {
+      "type": "object",
+      "description": "Official Tauri plugins",
+      "additionalProperties": {
+        "$ref": "#/definitions/pluginEntry"
+      }
+    },
+    "community": {
+      "type": "object",
+      "description": "Community plugins",
+      "additionalProperties": {
+        "$ref": "#/definitions/pluginEntry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "pluginEntry": {
+      "type": "object",
+      "required": ["enabled", "options"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this plugin is active"
+        },
+        "options": {
+          "type": "object",
+          "description": "Plugin-specific configuration options"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

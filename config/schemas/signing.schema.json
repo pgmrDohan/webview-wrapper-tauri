@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Signing Configuration",
+  "description": "Code signing configuration for Android and iOS builds",
+  "type": "object",
+  "required": ["android", "ios"],
+  "properties": {
+    "android": {
+      "type": "object",
+      "required": ["keystoreSecretName", "keystorePasswordSecretName", "keyAlias", "keyPasswordSecretName"],
+      "properties": {
+        "keystoreSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub Secret name containing the base64-encoded keystore"
+        },
+        "keystorePasswordSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub Secret name containing the keystore password"
+        },
+        "keyAlias": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Key alias within the keystore"
+        },
+        "keyPasswordSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub Secret name containing the key password"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ios": {
+      "type": "object",
+      "required": ["teamId", "certificateSecretName", "certificatePasswordSecretName", "provisioningProfileSecretName"],
+      "properties": {
+        "teamId": {
+          "type": "string",
+          "description": "Apple Developer Team ID"
+        },
+        "certificateSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub Secret name containing the base64-encoded certificate"
+        },
+        "certificatePasswordSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub Secret name containing the certificate password"
+        },
+        "provisioningProfileSecretName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub Secret name containing the base64-encoded provisioning profile"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

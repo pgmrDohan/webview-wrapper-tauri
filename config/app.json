@@ -1,0 +1,9 @@
+{
+  "productName": "My App",
+  "identifier": "com.example.myapp",
+  "version": "1.0.0",
+  "websiteUrl": "https://example.com",
+  "apiUrl": "https://api.example.com",
+  "userAgent": "",
+  "backgroundColor": "#ffffff"
+}

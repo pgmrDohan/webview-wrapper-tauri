@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "File Association Configuration",
+  "description": "File type associations for the application",
+  "type": "object",
+  "required": ["associations"],
+  "properties": {
+    "associations": {
+      "type": "array",
+      "description": "List of file type associations",
+      "items": {
+        "$ref": "#/definitions/association"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "association": {
+      "type": "object",
+      "required": ["ext", "mimeType", "name"],
+      "properties": {
+        "ext": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "File extensions (without dot)"
+        },
+        "mimeType": {
+          "type": "string",
+          "minLength": 1,
+          "description": "MIME type for the file association"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable name for the file type"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the file type"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["Editor", "Viewer", "Shell", "QLGenerator", "None"],
+          "description": "Application role for this file type"
+        },
+        "rank": {
+          "type": "string",
+          "enum": ["Owner", "Default", "Alternate", "None"],
+          "description": "Rank of this application for the file type"
+        },
+        "androidIntentActionFilters": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Android intent action filters"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
