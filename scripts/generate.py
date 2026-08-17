@@ -17,7 +17,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPTS_DIR.parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from plugin_registry import get_enabled_plugins, get_all_capabilities, get_plugin
+from plugin_registry import get_enabled_plugins, get_all_capabilities, get_plugin, get_ios_plist_entries, get_android_permissions
 
 CONFIG_DIR = PROJECT_ROOT / "config"
 TEMPLATES_DIR = PROJECT_ROOT / "templates"
@@ -125,6 +125,15 @@ def generate_http_capabilities(plugins_config: dict) -> list:
     return ["http:default"]
 
 
+def get_deep_link_options(plugins_config: dict) -> dict:
+    """Extract deep-link options from config."""
+    for category in ["official", "community"]:
+        if category in plugins_config and "deep-linking" in plugins_config[category]:
+            if plugins_config[category]["deep-linking"].get("enabled", False):
+                return plugins_config[category]["deep-linking"].get("options", {})
+    return {}
+
+
 def render_template(env: Environment, template_name: str, context: dict) -> str:
     """Render a Jinja2 template with context."""
     template = env.get_template(template_name)
@@ -212,11 +221,69 @@ def main():
     caps_content = render_template(env, "capabilities.json.j2", context)
     (CAPABILITIES_DIR / "default.json").write_text(caps_content, encoding="utf-8")
 
+    # =========================================================================
+    # Platform-specific file generation
+    # =========================================================================
+    ios_plist_entries = get_ios_plist_entries(enabled_plugins, plugins_config)
+    android_perms = get_android_permissions(enabled_plugins)
+
+    # Deep-link config
+    deep_link_opts = get_deep_link_options(plugins_config)
+    has_deep_link = any(p.id == "deep-linking" for p in enabled_plugins)
+    has_nfc = any(p.id == "nfc" for p in enabled_plugins)
+
+    # Android features
+    android_features = []
+    if has_nfc:
+        android_features.append("android.hardware.nfc")
+    if any(p.id == "geolocation" for p in enabled_plugins):
+        android_features.append("android.hardware.location.gps")
+
+    platform_context = {
+        "app": app_config,
+        "ios_plist_entries": ios_plist_entries,
+        "android_permissions": android_perms,
+        "android_features": android_features,
+        "has_nfc": has_nfc,
+        "has_deep_link": has_deep_link,
+        "deep_link_host": deep_link_opts.get("host", ""),
+        "deep_link_scheme": deep_link_opts.get("scheme", ""),
+        "deep_link_path_prefix": deep_link_opts.get("pathPrefix", ""),
+        "deep_link_app_link": deep_link_opts.get("appLink", True),
+        "file_associations": file_associations,
+    }
+
+    # Generate iOS Info.plist (only if there are entries)
+    if ios_plist_entries:
+        print("Generating Info.ios.plist...")
+        plist_content = render_template(env, "Info.ios.plist.j2", platform_context)
+        (SRC_TAURI_DIR / "Info.ios.plist").write_text(plist_content, encoding="utf-8")
+
+    # Generate iOS entitlements (only if NFC or deep-link with host)
+    if has_nfc or (has_deep_link and deep_link_opts.get("host")):
+        print("Generating iOS entitlements...")
+        entitlements_content = render_template(env, "entitlements.plist.j2", platform_context)
+        entitlements_path = SRC_TAURI_DIR / "gen" / "apple" / "webview-wrapper-tauri_iOS" / "webview-wrapper-tauri_iOS.entitlements"
+        entitlements_path.parent.mkdir(parents=True, exist_ok=True)
+        entitlements_path.write_text(entitlements_content, encoding="utf-8")
+
+    # Generate AndroidManifest.xml (always, since we always have INTERNET)
+    print("Generating AndroidManifest.xml...")
+    manifest_content = render_template(env, "AndroidManifest.xml.j2", platform_context)
+    manifest_path = SRC_TAURI_DIR / "gen" / "android" / "app" / "src" / "main" / "AndroidManifest.xml"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(manifest_content, encoding="utf-8")
+
     print("\nGeneration complete!")
     print(f"  Cargo.toml: {SRC_TAURI_DIR / 'Cargo.toml'}")
     print(f"  lib.rs: {src_dir / 'lib.rs'}")
     print(f"  tauri.conf.json: {SRC_TAURI_DIR / 'tauri.conf.json'}")
     print(f"  capabilities: {CAPABILITIES_DIR / 'default.json'}")
+    if ios_plist_entries:
+        print(f"  Info.ios.plist: {SRC_TAURI_DIR / 'Info.ios.plist'}")
+    if has_nfc or (has_deep_link and deep_link_opts.get("host")):
+        print(f"  iOS entitlements: {SRC_TAURI_DIR / 'gen' / 'apple' / 'webview-wrapper-tauri_iOS' / 'webview-wrapper-tauri_iOS.entitlements'}")
+    print(f"  AndroidManifest.xml: {manifest_path}")
 
 
 if __name__ == "__main__":

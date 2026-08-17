@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from generate import generate_csp, generate_plugins_config, generate_file_associations, generate_http_capabilities
+from generate import generate_csp, generate_plugins_config, generate_file_associations, generate_http_capabilities, get_deep_link_options
 from plugin_registry import get_plugin, get_enabled_plugins, get_all_capabilities
 
 
@@ -132,6 +132,95 @@ def test_get_all_capabilities_with_plugins():
     assert "clipboard-manager:allow-write-text" in capabilities
 
 
+def test_deep_link_options_enabled():
+    """Deep link options should be extracted when deep-linking is enabled."""
+    config = {
+        "official": {
+            "deep-linking": {"enabled": True, "options": {"scheme": "myapp", "host": "example.com", "pathPrefix": "/open", "appLink": True}}
+        },
+        "community": {}
+    }
+    opts = get_deep_link_options(config)
+    assert opts["scheme"] == "myapp"
+    assert opts["host"] == "example.com"
+    assert opts["pathPrefix"] == "/open"
+    assert opts["appLink"] is True
+
+
+def test_deep_link_options_disabled():
+    """Deep link options should return empty dict when plugin is disabled."""
+    config = {
+        "official": {
+            "deep-linking": {"enabled": False, "options": {"scheme": "myapp", "host": "example.com"}}
+        },
+        "community": {}
+    }
+    opts = get_deep_link_options(config)
+    assert opts == {}
+
+
+def test_deep_link_options_missing():
+    """Deep link options should return empty dict when plugin is not in config."""
+    config = {
+        "official": {"clipboard": {"enabled": True, "options": {}}},
+        "community": {}
+    }
+    opts = get_deep_link_options(config)
+    assert opts == {}
+
+
+def test_platform_generation_android_features():
+    """Android features should be populated based on enabled plugins."""
+    from plugin_registry import get_android_permissions
+    plugins_config = {
+        "official": {
+            "nfc": {"enabled": True, "options": {"usage_description": "Read NFC tags"}},
+            "geolocation": {"enabled": True, "options": {"usage_description": "Location access"}}
+        },
+        "community": {}
+    }
+    enabled = get_enabled_plugins(plugins_config)
+    android_perms = get_android_permissions(enabled)
+
+    # Check that NFC and location permissions are present
+    assert "android.permission.NFC" in android_perms
+    assert "android.permission.ACCESS_FINE_LOCATION" in android_perms
+    assert "android.permission.ACCESS_COARSE_LOCATION" in android_perms
+    assert "android.permission.INTERNET" in android_perms
+
+    # Check feature detection logic
+    has_nfc = any(p.id == "nfc" for p in enabled)
+    has_geo = any(p.id == "geolocation" for p in enabled)
+    assert has_nfc is True
+    assert has_geo is True
+
+    android_features = []
+    if has_nfc:
+        android_features.append("android.hardware.nfc")
+    if has_geo:
+        android_features.append("android.hardware.location.gps")
+    assert "android.hardware.nfc" in android_features
+    assert "android.hardware.location.gps" in android_features
+
+
+def test_platform_generation_ios_plist_entries():
+    """iOS plist entries should include usage descriptions from enabled plugins."""
+    from plugin_registry import get_ios_plist_entries
+    plugins_config = {
+        "official": {
+            "geolocation": {"enabled": True, "options": {"usage_description": "We need your location"}},
+            "nfc": {"enabled": True, "options": {"usage_description": "Read NFC tags"}}
+        },
+        "community": {}
+    }
+    enabled = get_enabled_plugins(plugins_config)
+    entries = get_ios_plist_entries(enabled, plugins_config)
+    assert "NSLocationWhenInUseUsageDescription" in entries
+    assert entries["NSLocationWhenInUseUsageDescription"] == "We need your location"
+    assert "NFCReaderUsageDescription" in entries
+    assert entries["NFCReaderUsageDescription"] == "Read NFC tags"
+
+
 if __name__ == "__main__":
     test_generate_csp_with_api_url()
     test_generate_csp_without_api_url()
@@ -144,4 +233,9 @@ if __name__ == "__main__":
     test_generate_http_capabilities_no_urls()
     test_get_all_capabilities_includes_core()
     test_get_all_capabilities_with_plugins()
+    test_deep_link_options_enabled()
+    test_deep_link_options_disabled()
+    test_deep_link_options_missing()
+    test_platform_generation_android_features()
+    test_platform_generation_ios_plist_entries()
     print("All generate tests passed!")

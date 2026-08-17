@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+{% for permission in android_permissions %}
+    <uses-permission android:name="{{ permission }}" />
+{% endfor %}
+{% for feature in android_features %}
+    <uses-feature android:name="{{ feature }}" android:required="true" />
+{% endfor %}
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.{{ app.identifier | replace('.', '_') }}"
+        android:usesCleartextTraffic="${usesCleartextTraffic}">
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+            android:launchMode="singleTask"
+            android:label="@string/main_activity_title"
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+{% if has_deep_link %}
+{% if deep_link_app_link and deep_link_host %}
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="{{ deep_link_host }}"{% if deep_link_path_prefix %} android:pathPrefix="{{ deep_link_path_prefix }}"{% endif %} />
+            </intent-filter>
+{% endif %}
+{% if deep_link_scheme %}
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="{{ deep_link_scheme }}" />
+            </intent-filter>
+{% endif %}
+{% endif %}
+{% if file_associations | length > 0 %}
+{% for assoc in file_associations %}
+{% if assoc.androidIntentActionFilters is defined %}
+{% for action in assoc.androidIntentActionFilters %}
+            <intent-filter>
+{% if action == "view" %}
+                <action android:name="android.intent.action.VIEW" />
+{% elif action == "send" %}
+                <action android:name="android.intent.action.SEND" />
+{% elif action == "sendMultiple" %}
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+{% endif %}
+                <category android:name="android.intent.category.DEFAULT" />
+{% if assoc.mimeType is defined %}
+                <data android:mimeType="{{ assoc.mimeType }}" />
+{% endif %}
+            </intent-filter>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+        </activity>
+
+        <provider
+          android:name="androidx.core.content.FileProvider"
+          android:authorities="${applicationId}.fileprovider"
+          android:exported="false"
+          android:grantUriPermissions="true">
+          <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>
