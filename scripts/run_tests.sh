@@ -27,6 +27,11 @@ echo "--- Integration Tests ---"
 python3 scripts/tests/test_integration.py
 
 echo ""
+echo "--- Restoring default state ---"
+git checkout -- src-tauri/Cargo.toml src-tauri/src/lib.rs src-tauri/src/main.rs src-tauri/tauri.conf.json src-tauri/capabilities/default.json src-tauri/gen/ 2>/dev/null || true
+rm -f src-tauri/Info.ios.plist
+
+echo ""
 echo "=================================="
 echo "All tests passed!"
 echo "=================================="
