@@ -282,15 +282,6 @@ _register(PluginDefinition(
     category="community",
 ))
 
-_register(PluginDefinition(
-    id="drpc",
-    crate_name="tauri-plugin-drpc",
-    crate_version="",
-    crate_source="git",
-    git_url="https://github.com/smokingplaya/tauri-plugin-drpc",
-    plugin_init="tauri_plugin_drpc::init()",
-    category="community",
-))
 
 _register(PluginDefinition(
     id="prevent-default",

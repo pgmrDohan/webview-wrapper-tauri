@@ -10,10 +10,6 @@ on:
         description: "BLE (Bluetooth Low Energy communication)"
         type: boolean
         default: false
-      drpc:
-        description: "DRPC (Discord Rich Presence)"
-        type: boolean
-        default: false
       prevent_default:
         description: "Prevent Default (disable default browser behaviors)"
         type: boolean
@@ -62,7 +58,6 @@ jobs:
           plugin_map = {
               'fcm': 'fcm',
               'blec': 'blec',
-              'drpc': 'drpc',
               'prevent_default': 'prevent-default',
               'ios_photos': 'ios-photos',
               'keep_screen_on': 'keep-screen-on',
@@ -75,7 +70,6 @@ jobs:
           inputs = {
               'fcm': '${{ inputs.fcm }}' == 'true',
               'blec': '${{ inputs.blec }}' == 'true',
-              'drpc': '${{ inputs.drpc }}' == 'true',
               'prevent_default': '${{ inputs.prevent_default }}' == 'true',
               'ios_photos': '${{ inputs.ios_photos }}' == 'true',
               'keep_screen_on': '${{ inputs.keep_screen_on }}' == 'true',

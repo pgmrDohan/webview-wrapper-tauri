@@ -51,7 +51,6 @@ This template lets you build Android and iOS apps from your existing website. Yo
 |--------|------------|
 | [FCM](plugins/fcm.md) | Firebase push notifications |
 | [BLE](plugins/blec.md) | Bluetooth Low Energy |
-| [Discord RPC](plugins/drpc.md) | Discord Rich Presence |
 | [Prevent Default](plugins/prevent-default.md) | Disable browser behaviors |
 | [iOS Photos](plugins/ios-photos.md) | Photo library access |
 | [Keep Screen On](plugins/keep-screen-on.md) | Prevent screen timeout |

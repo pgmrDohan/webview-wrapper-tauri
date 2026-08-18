@@ -22,10 +22,6 @@ on:
         description: "HTTP Client: Allowed URLs (comma-separated, e.g., https://api.example.com,https://cdn.example.com)"
         type: string
         default: ""
-      drpc_application_id:
-        description: "Discord RPC: Application ID"
-        type: string
-        default: ""
       fcm_project_id:
         description: "FCM: Firebase project ID"
         type: string
@@ -93,10 +89,6 @@ jobs:
           if http_urls:
               config['official']['http-client']['options']['allowed_urls'] = [u.strip() for u in http_urls.split(',') if u.strip()]
 
-          # DRPC application ID
-          drpc_id = '''${{ inputs.drpc_application_id }}'''
-          if drpc_id:
-              config['community']['drpc']['options']['application_id'] = drpc_id
 
           # FCM project ID
           fcm_id = '''${{ inputs.fcm_project_id }}'''

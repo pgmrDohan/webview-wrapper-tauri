@@ -50,7 +50,6 @@ Turn your existing website into a native Android & iOS app with native feature s
 |--------|-------------|----------|
 | FCM | Firebase Cloud Messaging | Android, iOS |
 | BLE | Bluetooth Low Energy | Android, iOS |
-| Discord RPC | Discord Rich Presence | Desktop-focused |
 | Prevent Default | Disable browser behaviors | Android, iOS |
 | iOS Photos | Photo library access | iOS |
 | Keep Screen On | Prevent screen timeout | Android, iOS |

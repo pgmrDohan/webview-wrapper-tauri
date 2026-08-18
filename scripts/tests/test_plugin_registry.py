@@ -9,7 +9,7 @@ from plugin_registry import (
 
 
 def test_registry_has_all_plugins():
-    assert len(PLUGIN_REGISTRY) == 29  # 19 official + 10 community
+    assert len(PLUGIN_REGISTRY) == 28  # 19 official + 10 community
 
 
 def test_get_plugin():
