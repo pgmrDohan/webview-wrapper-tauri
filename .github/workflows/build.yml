@@ -80,7 +80,7 @@ jobs:
           cargo tauri android init --ci --skip-targets-install
 
       - name: Setup Android signing (release only)
-        if: inputs.build_mode == 'release' && secrets.ANDROID_KEYSTORE_BASE64 != ''
+        if: ${{ inputs.build_mode == 'release' && secrets.ANDROID_KEYSTORE_BASE64 != '' }}
         run: |
           cd src-tauri/gen/android
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS || 'release' }}" > keystore.properties
@@ -149,7 +149,7 @@ jobs:
           fi
 
       - name: Setup iOS signing (release only)
-        if: inputs.build_mode == 'release' && secrets.IOS_CERTIFICATE_BASE64 != ''
+        if: ${{ inputs.build_mode == 'release' && secrets.IOS_CERTIFICATE_BASE64 != '' }}
         env:
           CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
           CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
