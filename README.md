@@ -57,6 +57,7 @@ Turn your existing website into a native Android & iOS app with native feature s
 | Sharesheet | Native share dialog | Android, iOS |
 | UDP | UDP socket communication | Android, iOS |
 | Battery Optimization | Disable battery optimization | Android |
+| System UI | Status bar, navigation bar, orientation control | Android, iOS |
 
 ## How It Works
 
