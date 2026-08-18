@@ -31,5 +31,7 @@ await selectionFeedback();
 
 ## Permissions
 
+No runtime permission request needed. This plugin works immediately once enabled in the build configuration.
+
 - **Android**: `android.permission.VIBRATE` is automatically added.
 - **iOS**: No additional permissions required. Uses the Taptic Engine.

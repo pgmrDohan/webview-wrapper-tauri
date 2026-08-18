@@ -1,5 +1,19 @@
 # Code Signing Guide
 
+## When Do You Need Signing?
+
+- **Debug builds**: No signing needed. Use `debug` build mode for testing.
+  - Android debug APK can be installed on real devices via USB
+  - iOS debug build runs on the Simulator only
+- **Release builds**: Signing is required for:
+  - Publishing to Google Play Store (Android)
+  - Publishing to App Store / TestFlight (iOS)
+  - Installing on iOS real devices (requires provisioning profile)
+
+If you're just testing, skip this page and use debug mode.
+
+---
+
 ## Android Signing
 
 ### Generate a Keystore

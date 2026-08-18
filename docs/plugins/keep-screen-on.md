@@ -18,5 +18,7 @@ await window.__TAURI__.invoke('plugin:keep-screen-on|disable');
 
 ## Permissions
 
+No runtime permission needed. The WAKE_LOCK permission is declared in the manifest and doesn't require user consent.
+
 - **Android**: WAKE_LOCK permission (auto-added)
 - **iOS**: No additional permissions needed

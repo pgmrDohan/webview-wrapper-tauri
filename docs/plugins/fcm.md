@@ -92,3 +92,5 @@ window.__TAURI__.event.listen('fcm://token', (event) => {
 ## Permissions
 
 Push notification permission is requested at runtime on iOS. On Android 13+, the `POST_NOTIFICATIONS` permission is also required at runtime.
+
+FCM token delivery is automatic. Notification display permission is handled by the notification plugin if also enabled.

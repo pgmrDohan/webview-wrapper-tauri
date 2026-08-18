@@ -52,6 +52,8 @@ Allowed URLs must be configured in the **Setup: Plugin Options** workflow. Only 
 
 ## Permissions
 
+No runtime permission needed. URL access is controlled by the `allowed_urls` config.
+
 - **Android**: `android.permission.INTERNET` is automatically added.
 - **iOS**: No additional permissions required.
 

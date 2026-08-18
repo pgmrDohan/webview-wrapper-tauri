@@ -22,3 +22,8 @@ await window.__TAURI__.invoke('plugin:sharesheet|share', {
   url: 'https://example.com/content/123'
 });
 ```
+
+
+## Permissions
+
+No runtime permission request needed. This plugin works immediately once enabled in the build configuration.

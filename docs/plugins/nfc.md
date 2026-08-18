@@ -8,6 +8,26 @@ Enable this plugin in the **Setup: Official Plugins** workflow.
 
 On iOS, the NFC reader usage description is configurable via the **Setup: Plugin Options** workflow.
 
+## Permission Request
+
+NFC availability should be checked before scanning:
+
+```javascript
+const { isAvailable, scan } = window.__TAURI__.nfc;
+
+// Check if device supports NFC
+const available = await isAvailable();
+if (!available) {
+  console.log('NFC not supported on this device');
+  return;
+}
+
+// NFC doesn't require explicit permission request on most devices
+// The scan dialog handles user consent implicitly
+```
+
+On Android, NFC permission is declared in the manifest and doesn't require a runtime prompt. On iOS, the NFC reading session itself acts as the user consent mechanism.
+
 ## Usage
 
 ```javascript

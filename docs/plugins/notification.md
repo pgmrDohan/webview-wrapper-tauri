@@ -6,6 +6,30 @@ Send local push notifications to the user, with support for channels and action 
 
 Enable this plugin in the **Setup: Official Plugins** workflow.
 
+## Permission Request
+
+Notification permission must be requested before sending notifications (required on iOS, and Android 13+):
+
+```javascript
+const { isPermissionGranted, requestPermission, sendNotification } = window.__TAURI__.notification;
+
+// 1. Check if already granted
+let granted = await isPermissionGranted();
+
+// 2. Request if not granted (OS dialog appears here)
+if (!granted) {
+  const permission = await requestPermission();
+  granted = permission === 'granted';
+}
+
+// 3. Send only if granted
+if (granted) {
+  sendNotification({ title: 'Hello', body: 'World' });
+}
+```
+
+Best practice: explain to the user why notifications are useful before requesting permission. Users are more likely to allow if they understand the benefit.
+
 ## Usage
 
 ```javascript

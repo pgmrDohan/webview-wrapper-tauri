@@ -36,3 +36,7 @@ await window.__TAURI__.invoke('plugin:drpc|clear_activity');
 
 - Discord must be running on the device for Rich Presence to work
 - This plugin is primarily useful for desktop; mobile support may be limited
+
+## Permissions
+
+No runtime permission request needed. This plugin works immediately once enabled in the build configuration.

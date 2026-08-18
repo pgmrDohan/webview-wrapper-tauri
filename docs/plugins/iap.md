@@ -71,4 +71,6 @@ const restored = await window.__TAURI__.invoke('plugin:iap|restore_purchases');
 
 ## Permissions
 
+No permission request needed. The billing permission is declared in the manifest. Purchase consent is handled by the store's payment UI.
+
 - **Android**: `com.android.vending.BILLING` (auto-added)

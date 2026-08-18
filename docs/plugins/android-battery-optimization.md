@@ -6,6 +6,24 @@ Request that the Android system excludes your app from battery optimization, all
 
 Enable in **Setup: Community Plugins** workflow.
 
+## Permission Request
+
+This plugin shows a system dialog (not a standard permission prompt):
+
+```javascript
+const isIgnoring = await window.__TAURI__.invoke(
+  'plugin:android-battery-optimization|is_ignoring_battery_optimizations'
+);
+
+if (!isIgnoring) {
+  // This shows a system dialog asking the user to allow battery optimization exemption
+  // You control WHEN this dialog appears
+  await window.__TAURI__.invoke(
+    'plugin:android-battery-optimization|request_ignore_battery_optimizations'
+  );
+}
+```
+
 ## Usage
 
 ```javascript

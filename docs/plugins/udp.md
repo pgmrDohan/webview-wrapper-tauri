@@ -33,4 +33,6 @@ await window.__TAURI__.invoke('plugin:udp|close', { id: socket.id });
 
 ## Permissions
 
+No runtime permission request needed. This plugin works immediately once enabled in the build configuration.
+
 - **Android**: INTERNET permission (auto-added)

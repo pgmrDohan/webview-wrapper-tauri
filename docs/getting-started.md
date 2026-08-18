@@ -107,8 +107,17 @@ See [Signing Guide](signing.md) for detailed instructions.
 Run **"Build: Android & iOS"** workflow:
 - Enter a version tag (e.g., `v1.0.0`)
 - Choose which platforms to build
+- Choose build mode:
+  - **Debug**: No signing required. Produces test builds:
+    - Android: debug APK (installable via USB / `adb install`)
+    - iOS: simulator build (run in Xcode Simulator)
+  - **Release**: Requires signing configuration. Produces store-ready builds:
+    - Android: signed APK for Google Play
+    - iOS: signed IPA for App Store / TestFlight
 
-Once complete, find your APK/IPA in the GitHub Releases page.
+For first-time testing, use **debug** mode. Switch to **release** when ready for distribution.
+
+Once complete, find your builds in the workflow's **Artifacts** section (debug) or **GitHub Releases** page (release).
 
 ## Step 6: Distribute
 

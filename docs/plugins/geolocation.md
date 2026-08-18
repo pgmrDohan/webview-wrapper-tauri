@@ -8,6 +8,32 @@ Enable this plugin in the **Setup: Official Plugins** workflow.
 
 On iOS, the location usage description is configurable via the **Setup: Plugin Options** workflow.
 
+## Permission Request
+
+Location permission must be requested before accessing GPS:
+
+```javascript
+const { checkPermissions, requestPermissions, getCurrentPosition } = window.__TAURI__.geolocation;
+
+// 1. Check current state
+let perms = await checkPermissions();
+
+// 2. Request if needed (OS dialog appears here)
+if (perms.location === 'prompt' || perms.location === 'prompt-with-rationale') {
+  perms = await requestPermissions(['location']);
+}
+
+// 3. Use only if granted
+if (perms.location === 'granted') {
+  const pos = await getCurrentPosition();
+  console.log(`Lat: ${pos.coords.latitude}, Lng: ${pos.coords.longitude}`);
+} else {
+  console.log('Location permission denied');
+}
+```
+
+You control the timing. Best practice: request when the user taps a "Show my location" button, not on app launch.
+
 ## Usage
 
 ```javascript
@@ -45,8 +71,6 @@ if (perms.location === 'granted') {
 ```
 
 ## Permissions
-
-Requires runtime location permission. Follow the check → request → use pattern.
 
 - **iOS**: `NSLocationWhenInUseUsageDescription` is configurable in Plugin Options.
 - **Android**: `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are automatically added.

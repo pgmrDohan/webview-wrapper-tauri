@@ -17,3 +17,8 @@ It prevents:
 - Other default browser behaviors
 
 This gives your app a more native feel by removing browser-specific interactions.
+
+
+## Permissions
+
+No runtime permission request needed. This plugin works immediately once enabled in the build configuration.

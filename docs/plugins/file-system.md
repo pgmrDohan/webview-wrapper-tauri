@@ -76,7 +76,7 @@ const { BaseDirectory } = window.__TAURI__.path;
 
 ## Permissions
 
-On mobile, file access is restricted to app-specific directories by default. The app can read and write within its own data and cache directories without additional permissions.
+No runtime permission prompt on mobile (access is sandboxed to app directories by default). If you need access to shared storage directories, the user grants access through the file picker dialog.
 
 - **Android**: `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` are added for broader access on older Android versions.
 - **iOS**: Access is sandboxed to the app container.
