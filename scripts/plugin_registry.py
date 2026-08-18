@@ -358,6 +358,17 @@ _register(PluginDefinition(
     category="community",
 ))
 
+_register(PluginDefinition(
+    id="system-ui",
+    crate_name="tauri-plugin-system-ui",
+    crate_version="",
+    crate_source="git",
+    git_url="https://github.com/pgmrDohan/tauri-plugin-system-ui",
+    plugin_init="tauri_plugin_system_ui::init()",
+    capabilities=["system-ui:default"],
+    category="community",
+))
+
 
 # =============================================================================
 # Helper Functions

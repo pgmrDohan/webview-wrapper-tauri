@@ -58,3 +58,4 @@ This template lets you build Android and iOS apps from your existing website. Yo
 | [Sharesheet](plugins/sharesheet.md) | Native share dialog |
 | [UDP](plugins/udp.md) | UDP socket communication |
 | [Battery Optimization](plugins/android-battery-optimization.md) | Background work |
+| [System UI](plugins/system-ui.md) | Status bar, navigation bar, home indicator, orientation control |

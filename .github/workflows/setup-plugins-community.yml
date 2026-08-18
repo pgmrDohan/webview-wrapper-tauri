@@ -38,6 +38,10 @@ on:
         description: "Battery Optimization (request disable battery optimization)"
         type: boolean
         default: false
+      system_ui:
+        description: "System UI (status bar, navigation bar, orientation control)"
+        type: boolean
+        default: false
 
 jobs:
   update-plugins:
@@ -65,6 +69,7 @@ jobs:
               'sharesheet': 'sharesheet',
               'udp': 'udp',
               'android_battery_optimization': 'android-battery-optimization',
+              'system_ui': 'system-ui',
           }
 
           inputs = {
@@ -77,6 +82,7 @@ jobs:
               'sharesheet': '${{ inputs.sharesheet }}' == 'true',
               'udp': '${{ inputs.udp }}' == 'true',
               'android_battery_optimization': '${{ inputs.android_battery_optimization }}' == 'true',
+              'system_ui': '${{ inputs.system_ui }}' == 'true',
           }
 
           for input_key, plugin_id in plugin_map.items():

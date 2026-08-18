@@ -136,6 +136,10 @@
     "android-battery-optimization": {
       "enabled": false,
       "options": {}
+    },
+    "system-ui": {
+      "enabled": false,
+      "options": {}
     }
   }
 }
