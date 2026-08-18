@@ -38,6 +38,25 @@ If you enabled plugins that require additional configuration (deep-linking, HTTP
 
 If your app handles custom file types, run **"Setup: File Association"** workflow.
 
+## Step 2.5: Add App Assets
+
+### App Icon
+
+Commit your app icon as `assets/icon.png`:
+- **Size**: 1024x1024 pixels
+- **Format**: PNG (transparency supported)
+- The build system automatically generates all required sizes for Android and iOS
+
+### Splash Screen
+
+Commit your splash image as `assets/splash.png`:
+- **Size**: 512x512 or 1024x1024 pixels recommended
+- **Format**: PNG with transparent background
+- The image is centered on a solid background color on both platforms
+- Set the background color in the **"Setup: App Configuration"** workflow (`splash_background_color` field)
+
+Both files are optional. If not provided, defaults are used.
+
 ## Step 3: Implement Native Features in Your Web App
 
 For each plugin you enabled, add the corresponding JavaScript code to your web app. See the [plugin documentation](plugins/) for examples.

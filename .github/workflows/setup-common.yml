@@ -37,6 +37,11 @@ on:
         required: false
         type: string
         default: "#ffffff"
+      splash_background_color:
+        description: "Splash screen background color (hex, e.g., #ffffff)"
+        required: false
+        type: string
+        default: "#ffffff"
 
 jobs:
   update-config:
@@ -87,7 +92,8 @@ jobs:
               'websiteUrl': '''${{ inputs.website_url }}''',
               'apiUrl': '''${{ inputs.api_url }}''',
               'userAgent': '''${{ inputs.user_agent }}''',
-              'backgroundColor': '''${{ inputs.background_color }}'''
+              'backgroundColor': '''${{ inputs.background_color }}''',
+              'splashBackgroundColor': '''${{ inputs.splash_background_color }}''' or '#ffffff'
           }
           with open('config/app.json', 'w') as f:
               json.dump(config, f, indent=2)

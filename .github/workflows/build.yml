@@ -48,6 +48,9 @@ jobs:
       - name: Generate project files
         run: python scripts/generate.py
 
+      - name: Process assets (splash & icon)
+        run: python scripts/process_assets.py
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -78,6 +81,12 @@ jobs:
         run: |
           rm -rf src-tauri/gen/android
           cargo tauri android init --ci --skip-targets-install
+
+      - name: Generate platform icons
+        run: |
+          if [ -f "assets/icon.png" ]; then
+            cargo tauri icon assets/icon.png
+          fi
 
       - name: Setup Android signing (release only)
         if: inputs.build_mode == 'release'
@@ -135,6 +144,9 @@ jobs:
       - name: Generate project files
         run: python scripts/generate.py
 
+      - name: Process assets (splash & icon)
+        run: python scripts/process_assets.py
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -147,6 +159,12 @@ jobs:
         run: |
           rm -rf src-tauri/gen/apple
           cargo tauri ios init --ci --skip-targets-install
+
+      - name: Generate platform icons
+        run: |
+          if [ -f "assets/icon.png" ]; then
+            cargo tauri icon assets/icon.png
+          fi
 
       - name: Apply iOS platform config
         run: |
